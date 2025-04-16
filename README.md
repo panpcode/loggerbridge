@@ -12,6 +12,7 @@ This project is developed for **Entec Contractors SA** to facilitate reading reg
 - [Installation](#installation)
 - [Usage](#usage)
 - [Web Interface](#web-interface)
+- [Docker Usage](#docker-usage)
 
 ---
 
@@ -31,6 +32,7 @@ LoggerBridge is designed to:
 - **Logger Reader**: Read and log register values from Modbus devices.
 - **Logger Control**: Start or stop loggers via the web interface.
 - **Dynamic Output**: View script outputs and logs directly in the browser.
+- **Docker Support**: Run the application in a Docker container for easy deployment.
 
 ---
 
@@ -44,6 +46,7 @@ LoggerBridge is designed to:
   - `flask`
   - `flask-wtf`
   - `flask-cors`
+- Docker (optional, for containerized deployment)
 
 ### Steps
 1. Clone the repository:
@@ -54,14 +57,14 @@ LoggerBridge is designed to:
 
 2. Install the required Python packages:
    ```bash
-   pip install pymodbus flask flask-wtf flask-cors
+   pip install -r package/requirements.txt
    ```
 
 ---
 
 ## Usage
 
-### Running the Application
+### Running the Application Locally
 1. Start the Flask server:
    ```bash
    python app.py
@@ -110,6 +113,39 @@ Error or Logs:
 
 ---
 
+## Docker Usage
+
+### Prerequisites
+- Docker installed on your system.
+
+### Steps to Run with Docker
+
+1. **Build the Docker Image**:
+   Navigate to the `package` folder and build the Docker image:
+   ```bash
+   docker-compose -f package/docker-compose.yml build
+   ```
+
+2. **Run the Docker Container**:
+   Start the container using Docker Compose:
+   ```bash
+   docker-compose -f package/docker-compose.yml up
+   ```
+
+3. **Access the Application**:
+   Open your web browser and navigate to:
+   ```
+   http://localhost:5001
+   ```
+
+4. **Stop the Container**:
+   To stop the container, press `Ctrl+C` or run:
+   ```bash
+   docker-compose -f package/docker-compose.yml down
+   ```
+
+---
+
 ## Development Notes
 
 ### Flask Routes
@@ -119,5 +155,26 @@ Error or Logs:
 ### Scripts
 - **`logger_reader.py`**:
   - Reads registers from Modbus devices and logs the results.
+  - Requires a `category` argument to specify the device type.
 - **`logger_control.py`**:
   - Controls the logger (start/stop) by writing to specific Modbus registers.
+  - Requires `action` (start/stop) and `category` arguments.
+
+---
+
+## Example `devices.csv`
+
+Ensure your `devices.csv` file contains the correct categories and device information:
+```csv
+category,ip,port,unit_id,register_address,register_name,scale,unit
+huawei,10.100.7.163,502,100,40202,Plant Status,1,
+sungrow,10.100.2.163,502,247,8001,Plant Status,1,
+froniusGen24,10.108.1.51,502,1,40193,PV inverter state,1,
+froniusDatamanager,10.100.2.161,502,1,40193,Plant Status,1,
+```
+
+---
+
+## Notes
+- Ensure that the `category` passed from the web interface matches the `category` values in `devices.csv`.
+- Test the application thoroughly to verify that all dependencies and configurations are working correctly in both local and Docker environments.
