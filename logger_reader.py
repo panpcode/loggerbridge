@@ -1,32 +1,42 @@
+import csv
 from modbus_device import ModbusDevice
 from register import Register
 from modbus_reader import ModbusReader
+import sys
+
+# Disable buffering for stdout and stderr for monitoring team to check results in real time
+sys.stdout.reconfigure(line_buffering=True)
+
+def load_device_by_category(csv_file, category):
+    '''
+        Load a specific device and its registers from the CSV file based on the provided category.
+    '''
+    with open(csv_file, mode='r') as file:
+        reader = csv.DictReader(file)
+        for row in reader:
+            if row['category'] == category:
+                device = ModbusDevice(ip=row['ip'], port=int(row['port']), unit_id=int(row['unit_id']))
+                register = Register(
+                    address=int(row['register_address']),
+                    name=row['register_name'],
+                    scale=int(row['scale']),
+                    unit=row['unit']
+                )
+                return device, [register]
+    raise ValueError(f"Device category '{category}' not found in CSV.")
 
 if __name__ == "__main__":
-    
-    # here we can accept a list of devices
-    huawei = ModbusDevice(ip="10.100.7.163", port=502, unit_id=100)
-    sunGrow = ModbusDevice(ip="10.100.2.163", port=502, unit_id=247)
-    froniusGen24 = ModbusDevice(ip="10.108.1.51", port=502, unit_id=1)
-    froniusDatamanager = ModbusDevice(ip="10.100.2.161", port=502, unit_id=1)
+    if len(sys.argv) < 2:
+        print("Error: Category argument is required.")
+        sys.exit(1)
 
-    # here we can accept a list of registers 
-    huaRegisters = [
-        Register(address=40543, name="Plant Status", scale=1, unit="")
-    ]
+    category = sys.argv[1]  
+    try:
+        device, registers = load_device_by_category("devices.csv", category)
 
-    sungrowRegister = [
-        Register(address=8001, name="Plant Status", scale=1, unit="")
-    ]
-
-    froniusGen24Register = [
-        Register(address=40193, name="PV inverter state", scale=1, unit="")
-    ]
-
-    froniusDatamanagerRegister = [
-        Register(address=40193, name="Plant Status", scale=1, unit="")
-    ]
-    
-    # creating a ModbusReader object to read all the provided registers
-    reader = ModbusReader(device=froniusDatamanager, registers=froniusDatamanagerRegister)
-    reader.read_all_registers()
+        print(f"Reading state of {category}...")
+        reader = ModbusReader(device=device, registers=registers, category=category)
+        reader.read_all_registers()
+    except ValueError as e:
+        print(f"Error: {e}")
+        sys.exit(1)

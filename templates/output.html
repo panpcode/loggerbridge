@@ -2,19 +2,39 @@
 <html>
 <head>
     <title>Script Output</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.5;
+        }
+        .output {
+            white-space: pre-wrap;
+            background-color: #f4f4f4;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            overflow-y: auto;
+            max-height: 500px;
+        }
+        .error {
+            color: black;
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            overflow-y: auto;
+            max-height: 500px;
+        }
+    </style>
 </head>
 <body>
     <h1>Script Output</h1>
-    {% if output %}
-        <h2>Output:</h2>
-        <pre>{{ output }}</pre>
-    {% endif %}
-
-    {% if error %}
-        <h2>Error or Logs:</h2>
-        <pre>{{ error }}</pre>
-    {% endif %}
-
+    <div class="output">
+        {{ output|safe }}
+    </div>
     <a href="/">Go Back</a>
 </body>
 </html>

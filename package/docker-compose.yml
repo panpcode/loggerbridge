@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  loggerbridge:
+    build:
+      context: ../   
+      dockerfile: package/Dockerfile
+    ports:
+      - "5001:5000"
+    volumes:
+      - ../:/app 
+    environment:
+      - FLASK_APP=app.py
+      - FLASK_RUN_HOST=0.0.0.0

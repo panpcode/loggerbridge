@@ -29,8 +29,8 @@ class ModbusDevice:
         values = self.client.read_holding_registers(address, count)
         if values is None:
             logging.error(f"❌ Failed to read from address {address}")
-        else:
-            logging.info(f"📖 Read from address {address}: {values}")
+        # else:
+        #     logging.info(f"📖 Read from address {address}: {values}")
         return values
 
     def write_register(self, address, value):
