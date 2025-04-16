@@ -20,13 +20,13 @@ if __name__ == "__main__":
     ]
 
     froniusGen24Register = [
-        Register(address=40195, name="PV inverter state", scale=1, unit="")
+        Register(address=40241, name="PV inverter state", scale=1, unit="")
     ]
 
     froniusDatamanagerRegister = [
-        Register(address=40242, name="Plant Status", scale=1, unit="")
+        Register(address=40241, name="Plant Status", scale=1, unit="")
     ]
     
     # creating a ModbusReader object to read all the provided registers
-    reader = ModbusReader(device=froniusGen24, registers=froniusGen24Register)
+    reader = ModbusReader(device=froniusDatamanager, registers=froniusDatamanagerRegister)
     reader.read_all_registers()
