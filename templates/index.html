@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Script Launcher</title>
+</head>
+<body>
+    <h1>Run Scripts</h1>
+    <form action="/run" method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" name="script" value="logger">Run Logger Reader</button>
+    </form>
+
+    <h2>Control Logger</h2>
+    <form action="/run" method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="script" value="control">
+        <button type="submit" name="action" value="start">Start Logger</button>
+        <button type="submit" name="action" value="stop">Stop Logger</button>
+    </form>
+</body>
+</html>

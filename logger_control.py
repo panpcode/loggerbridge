@@ -26,7 +26,7 @@ def control_logger(device, register_address, action):
 
 if __name__ == "__main__":
     froniusGen24 = ModbusDevice(ip="10.108.1.51", port=502, unit_id=1)
-    froniusDatamanager = ModbusDevice(ip="10.100.2.161", port=502, unit_id=1)
+    froniusDatamanager = ModbusDevice(ip="10.100.2.161", port=502, unit_id=3)
 
     try:
         START_STOP_REGISTER = 40241

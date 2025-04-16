@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Script Output</title>
+</head>
+<body>
+    <h1>Script Output</h1>
+    {% if output %}
+        <h2>Output:</h2>
+        <pre>{{ output }}</pre>
+    {% endif %}
+
+    {% if error %}
+        <h2>Error or Logs:</h2>
+        <pre>{{ error }}</pre>
+    {% endif %}
+
+    <a href="/">Go Back</a>
+</body>
+</html>
