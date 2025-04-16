@@ -8,7 +8,7 @@ if __name__ == "__main__":
     huawei = ModbusDevice(ip="10.100.7.163", port=502, unit_id=100)
     sunGrow = ModbusDevice(ip="10.100.2.163", port=502, unit_id=247)
     froniusGen24 = ModbusDevice(ip="10.108.1.51", port=502, unit_id=1)
-    froniusDatamanager = ModbusDevice(ip="10.100.2.161", port=502, unit_id=3)
+    froniusDatamanager = ModbusDevice(ip="10.100.2.161", port=502, unit_id=1)
 
     # here we can accept a list of registers 
     huaRegisters = [
@@ -20,11 +20,11 @@ if __name__ == "__main__":
     ]
 
     froniusGen24Register = [
-        Register(address=40241, name="PV inverter state", scale=1, unit="")
+        Register(address=40193, name="PV inverter state", scale=1, unit="")
     ]
 
     froniusDatamanagerRegister = [
-        Register(address=40241, name="Plant Status", scale=1, unit="")
+        Register(address=40193, name="Plant Status", scale=1, unit="")
     ]
     
     # creating a ModbusReader object to read all the provided registers

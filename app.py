@@ -17,7 +17,7 @@ def run_script():
     script = request.form.get('script')
 
     if script == "logger":
-        # Run logger_reader.py
+        
         script_path = os.path.join(os.getcwd(), "logger_reader.py")
         try:
             process = subprocess.Popen(["python3", script_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
@@ -25,13 +25,14 @@ def run_script():
             print(stdout)
             print(stderr)
 
-            # Pass both stdout and stderr to the template
+            # expose both stdout and stderr to the template
             return render_template('output.html', output=stdout, error=stderr)
         except Exception as e:
             return render_template('output.html', output=None, error=str(e))
 
     elif script == "control":
-        action = request.form.get('action', 'start')  # Default to "start"
+
+        action = request.form.get('action', 'start')  # Default to "start" because it doesn't do anything if already started
         try:
             script_path = os.path.join(os.getcwd(), "logger_control.py")
             process = subprocess.Popen(["python3", script_path, action], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
@@ -39,7 +40,7 @@ def run_script():
             print(stdout)
             print(stderr)
 
-            # Pass both stdout and stderr to the template
+            # expose both stdout and stderr to the template
             return render_template('output.html', output=stdout, error=stderr)
         except Exception as e:
             return render_template('output.html', output=None, error=str(e))
