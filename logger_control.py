@@ -13,6 +13,10 @@ def load_device_from_csv(csv_file, category, action):
     with open(csv_file, mode='r') as file:
         reader = csv.DictReader(file)
         for row in reader:
+            # skip any comments (while testing)
+            if row['category'].startswith('#'):
+                continue
+
             if row['category'] == category:
                 device = ModbusDevice(ip=row['ip'], port=int(row['port']), unit_id=int(row['unit_id']))
                 if action == "start":

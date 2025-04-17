@@ -5,11 +5,15 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 
 class ModbusDevice:
 
-    def __init__(self, ip, port, unit_id):
+    def __init__(self, ip, port, unit_id, timeout=10):
+        '''
+            Setting the default timeout to 5 seconds and this can be overridden when creating the ModbusDevice object
+            Increasing as I have observed failures during parallel reading with threadExecutor
+        '''
         self.ip = ip
         self.port = port
         self.unit_id = unit_id
-        self.client = ModbusClient(host=self.ip, port=self.port, unit_id=self.unit_id, auto_open=True)
+        self.client = ModbusClient(host=self.ip, port=self.port, unit_id=self.unit_id, auto_open=True, timeout=timeout)
 
     def connect(self):
         if not self.client.is_open:
@@ -30,8 +34,9 @@ class ModbusDevice:
         if not self.connect():
             return None
         values = self.client.read_holding_registers(address, count)
-        if values is None:
-            logging.error(f"❌ Failed to read from address {address}")
+        # for debugging - commenting out for production
+        # if values is None:
+        #     logging.error(f"❌ Failed to read from address {address}")
         # else:
         #     logging.info(f"📖 Read from address {address}: {values}")
         return values
@@ -43,8 +48,9 @@ class ModbusDevice:
         if not self.connect():
             return None
         values = self.client.read_input_registers(address, count)
-        if values is None:
-            logging.error(f"❌ Failed to read input register at address {address}")
+        # for debugging - commenting out for production
+        # if values is None:
+        #     logging.error(f"❌ Failed to read input register at address {address}")
         # else:
         #     logging.info(f"📖 Read input register at address {address}: {values}")
         return values

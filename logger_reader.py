@@ -18,6 +18,10 @@ def load_devices_by_category(csv_file, category):
     with open(csv_file, mode='r') as file:
         reader = csv.DictReader(file)
         for row in reader:
+            # skip any comments (while testing)
+            if row['category'].startswith('#'):
+                continue
+
             if row['category'] == category:
                 if category == "froniusDatamanager":
                     # Iterate over all unit IDs ONLY for froniusDatamanager
@@ -65,6 +69,7 @@ if __name__ == "__main__":
         devices = load_devices_by_category("all_devices.csv", category)
 
         print(f"Reading state of devices in category '{category}' in parallel...")
+        # default_workers = min(32, os.cpu_count() + 4)
         with ThreadPoolExecutor() as executor:
             # parallel reading 
             futures = [executor.submit(read_device, device, registers, category) for device, registers in devices]
