@@ -46,22 +46,37 @@ def load_devices_from_csv(csv_file, category, action):
         raise ValueError(f"No devices found for category '{category}' in the CSV file.")
     return devices
 
-def control_logger(device, register_address, action):
+
+def control_logger(device, register_address, action, category):
     '''
         Control the logger by writing to the appropriate register address.
     '''
     START_VALUE = 1
     STOP_VALUE = 0   
 
-    if action == "start":
-        value = START_VALUE
-        action_text = "Starting"
-    elif action == "stop":
-        value = STOP_VALUE
-        action_text = "Stopping"
+    if category == "huawei":
+        # Special logic for Huawei
+        # Start register set to 0 - Stop register set to 0
+        if action == "start":
+            value = 0  
+            action_text = "Starting"
+        elif action == "stop":
+            value = 0  
+            action_text = "Stopping"
+        else:
+            logging.error("Invalid action. Use 'start' or 'stop'.")
+            return
     else:
-        logging.error("Invalid action. Use 'start' or 'stop'.")
-        return
+        # Default logic for other categories
+        if action == "start":
+            value = START_VALUE
+            action_text = "Starting"
+        elif action == "stop":
+            value = STOP_VALUE
+            action_text = "Stopping"
+        else:
+            logging.error("Invalid action. Use 'start' or 'stop'.")
+            return
 
     # logging.info(f"{action_text} the logger on device (IP: {device.ip}, Port: {device.port}, Unit ID: {device.unit_id})...")
     result = device.write_register(register_address, value)
@@ -70,16 +85,22 @@ def control_logger(device, register_address, action):
     else:
         logging.error(f"Failed to {action} the logger on device (IP: {device.ip}, Port: {device.port}, Unit ID: {device.unit_id}).")
 
-def execute_action_in_parallel(devices, action):
+
+def execute_action_in_parallel(devices, action, category):
     '''
         Execute the start/stop action on multiple devices in parallel using ThreadPoolExecutor.
     '''
-    with ThreadPoolExecutor() as executor:
-        futures = [executor.submit(control_logger, device, register_address, action) for device, register_address in devices]
+    max_workers = 10  # we can discuss with Konstantinos the value for Linux server 
+    task_timeout = 30  # timeout for each task (secs)
+
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        futures = [executor.submit(control_logger, device, register_address, action, category) for device, register_address in devices]
 
         for future in as_completed(futures):
             try:
-                future.result()  # Wait for the task to complete and handle exceptions
+                future.result(timeout=task_timeout)  # Wait for the task to complete with a timeout
+            except TimeoutError:
+                logging.error("Task timed out.")
             except Exception as e:
                 logging.error(f"Error during parallel execution: {e}")
 
@@ -92,6 +113,6 @@ if __name__ == "__main__":
     try:
         devices = load_devices_from_csv("all_devices.csv", args.category, args.action)
         logging.info(f"Executing '{args.action}' action on devices in category '{args.category}' in parallel...")
-        execute_action_in_parallel(devices, args.action)
+        execute_action_in_parallel(devices, args.action, args.category)
     except ValueError as e:
         logging.error(f"Error: {e}")

@@ -24,10 +24,17 @@ class ModbusReader:
                     raw_value = self.device.read_register(reg.address)  # Default = Holding Registers
 
                 if raw_value is not None and len(raw_value) > 0:
-                    if self.category in ["froniusGen24", "froniusDatamanager"]:
+                    if self.category in ["froniusDatamanager"]:
                         if raw_value == [7]:
                             logging.info(f"✅ SUCCESS - {reg.name} with IP {self.device.ip}: RUNNING")
                         elif raw_value == [6]:
+                            logging.info(f"✅ SUCCESS - {reg.name} with IP {self.device.ip}: STOPPED")
+                        else:
+                            logging.info(f"✅ SUCCESS - {reg.name} with IP {self.device.ip}: {raw_value} {reg.unit}")
+                    elif self.category in ["froniusGen24"]:
+                        if raw_value == [7]:
+                            logging.info(f"✅ SUCCESS - {reg.name} with IP {self.device.ip}: RUNNING")
+                        elif raw_value == [1]:
                             logging.info(f"✅ SUCCESS - {reg.name} with IP {self.device.ip}: STOPPED")
                         else:
                             logging.info(f"✅ SUCCESS - {reg.name} with IP {self.device.ip}: {raw_value} {reg.unit}")
@@ -36,6 +43,8 @@ class ModbusReader:
                             logging.info(f"✅ SUCCESS - {reg.name} with IP {self.device.ip}: RUNNING")
                         elif raw_value == [4]:
                             logging.info(f"✅ SUCCESS - {reg.name} with IP {self.device.ip}: STOPPED")
+                        elif raw_value == [3]:
+                            logging.info(f"✅ SUCCESS - {reg.name} with IP {self.device.ip}: STARTING")
                         else:
                             logging.info(f"✅ SUCCESS - {reg.name} with IP {self.device.ip}: {raw_value} {reg.unit}")
                     elif self.category in ["sungrow"]:
