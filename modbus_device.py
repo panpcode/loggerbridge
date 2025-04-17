@@ -24,6 +24,9 @@ class ModbusDevice:
             logging.info("🔌 Disconnected from Modbus server.")
 
     def read_register(self, address, count=1):
+        '''
+            This reads holding registers
+        '''
         if not self.connect():
             return None
         values = self.client.read_holding_registers(address, count)
@@ -31,6 +34,19 @@ class ModbusDevice:
             logging.error(f"❌ Failed to read from address {address}")
         # else:
         #     logging.info(f"📖 Read from address {address}: {values}")
+        return values
+    
+    def read_input_register(self, address, count=1):
+        '''
+            Read input registers  
+        '''
+        if not self.connect():
+            return None
+        values = self.client.read_input_registers(address, count)
+        if values is None:
+            logging.error(f"❌ Failed to read input register at address {address}")
+        # else:
+        #     logging.info(f"📖 Read input register at address {address}: {values}")
         return values
 
     def write_register(self, address, value):

@@ -1,6 +1,6 @@
 import logging, sys
 
-# disable buffering for stdout and stderr for monitor team to check results in real time
+# Disable buffering for stdout and stderr for monitoring team to check results in real time
 sys.stdout.reconfigure(line_buffering=True)
 
 class ModbusReader:
@@ -18,9 +18,12 @@ class ModbusReader:
         '''
         for reg in self.registers:
             try:
-                raw_value = self.device.read_register(reg.address)
-                if raw_value is not None and len(raw_value) > 0:
+                if self.category == "sungrow":
+                    raw_value = self.device.read_input_register(reg.address)  # Sungrow devices use input registers
+                else:
+                    raw_value = self.device.read_register(reg.address)  # Default = Holding Registers
 
+                if raw_value is not None and len(raw_value) > 0:
                     if self.category in ["froniusGen24", "froniusDatamanager"]:
                         if raw_value == [7]:
                             logging.info(f"✅ SUCCESS - {reg.name} (Address: {reg.address}, Device IP: {self.device.ip}): RUNNING")
@@ -31,7 +34,14 @@ class ModbusReader:
                     elif self.category in ["huawei"]:
                         if raw_value == [1]:
                             logging.info(f"✅ SUCCESS - {reg.name} (Address: {reg.address}, Device IP: {self.device.ip}): RUNNING")
-                        elif raw_value == [5]:
+                        elif raw_value == [4]:
+                            logging.info(f"✅ SUCCESS - {reg.name} (Address: {reg.address}, Device IP: {self.device.ip}): STOPPED")
+                        else:
+                            logging.info(f"✅ SUCCESS - {reg.name} (Address: {reg.address}, Device IP: {self.device.ip}): {raw_value} {reg.unit}")
+                    elif self.category in ["sungrow"]:
+                        if raw_value == [1]:
+                            logging.info(f"✅ SUCCESS - {reg.name} (Address: {reg.address}, Device IP: {self.device.ip}): RUNNING")
+                        elif raw_value == [0]:
                             logging.info(f"✅ SUCCESS - {reg.name} (Address: {reg.address}, Device IP: {self.device.ip}): STOPPED")
                         else:
                             logging.info(f"✅ SUCCESS - {reg.name} (Address: {reg.address}, Device IP: {self.device.ip}): {raw_value} {reg.unit}")

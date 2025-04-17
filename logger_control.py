@@ -6,15 +6,28 @@ from modbus_device import ModbusDevice
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
-def load_device_from_csv(csv_file, category):
+def load_device_from_csv(csv_file, category, action):
+    '''
+        Load the device and the appropriate register address based on the action (start/stop).
+    '''
     with open(csv_file, mode='r') as file:
         reader = csv.DictReader(file)
         for row in reader:
             if row['category'] == category:
-                return ModbusDevice(ip=row['ip'], port=int(row['port']), unit_id=int(row['unit_id'])), int(row['register_address'])
+                device = ModbusDevice(ip=row['ip'], port=int(row['port']), unit_id=int(row['unit_id']))
+                if action == "start":
+                    register_address = int(row['register_start_addr'])
+                elif action == "stop":
+                    register_address = int(row['register_stop_addr'])
+                else:
+                    raise ValueError("Invalid action. Use 'start' or 'stop'.")
+                return device, register_address
     raise ValueError(f"Device category '{category}' not found in CSV.")
 
 def control_logger(device, register_address, action):
+    '''
+        Control the logger by writing to the appropriate register address.
+    '''
     START_VALUE = 1
     STOP_VALUE = 0   
 
@@ -36,14 +49,13 @@ def control_logger(device, register_address, action):
         logging.error(f"Failed to {action} the logger on device (IP: {device.ip}, Port: {device.port}, Unit ID: {device.unit_id}).")
 
 if __name__ == "__main__":
-
     parser = argparse.ArgumentParser(description="Control the logger (start/stop).")
     parser.add_argument("action", choices=["start", "stop"], help="Action to perform on the logger (start or stop).")
     parser.add_argument("category", help="Device category (e.g., huawei, sungrow, froniusGen24, froniusDatamanager).")
     args = parser.parse_args()
 
     try:
-        device, register_address = load_device_from_csv("devices.csv", args.category)
+        device, register_address = load_device_from_csv("all_devices.csv", args.category, args.action)
         control_logger(device, register_address, args.action)
     except ValueError as e:
         logging.error(f"Error: {e}")
