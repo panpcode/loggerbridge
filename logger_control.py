@@ -2,31 +2,49 @@ import argparse
 import csv
 import logging
 from modbus_device import ModbusDevice
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
-def load_device_from_csv(csv_file, category, action):
+def load_devices_from_csv(csv_file, category, action):
     '''
-        Load the device and the appropriate register address based on the action (start/stop).
+        Load all devices and their appropriate register addresses based on the action (start/stop).
+        For the froniusDatamanager category, iterate over all unit IDs from 1 to the specified unit_id.
     '''
+    devices = []
     with open(csv_file, mode='r') as file:
         reader = csv.DictReader(file)
         for row in reader:
-            # skip any comments (while testing)
+            # Skip lines that are comments (if any)
             if row['category'].startswith('#'):
                 continue
 
             if row['category'] == category:
-                device = ModbusDevice(ip=row['ip'], port=int(row['port']), unit_id=int(row['unit_id']))
-                if action == "start":
-                    register_address = int(row['register_start_addr'])
-                elif action == "stop":
-                    register_address = int(row['register_stop_addr'])
+                if category == "froniusDatamanager":
+                    # Iterate over all unit IDs ONLY for froniusDatamanager
+                    max_unit_id = int(row['unit_id'])
+                    for unit_id in range(1, max_unit_id + 1):
+                        device = ModbusDevice(ip=row['ip'], port=int(row['port']), unit_id=unit_id)
+                        if action == "start":
+                            register_address = int(row['register_start_addr'])
+                        elif action == "stop":
+                            register_address = int(row['register_stop_addr'])
+                        else:
+                            raise ValueError("Invalid action. Use 'start' or 'stop'.")
+                        devices.append((device, register_address))
                 else:
-                    raise ValueError("Invalid action. Use 'start' or 'stop'.")
-                return device, register_address
-    raise ValueError(f"Device category '{category}' not found in CSV.")
+                    device = ModbusDevice(ip=row['ip'], port=int(row['port']), unit_id=int(row['unit_id']))
+                    if action == "start":
+                        register_address = int(row['register_start_addr'])
+                    elif action == "stop":
+                        register_address = int(row['register_stop_addr'])
+                    else:
+                        raise ValueError("Invalid action. Use 'start' or 'stop'.")
+                    devices.append((device, register_address))
+    if not devices:
+        raise ValueError(f"No devices found for category '{category}' in the CSV file.")
+    return devices
 
 def control_logger(device, register_address, action):
     '''
@@ -52,6 +70,19 @@ def control_logger(device, register_address, action):
     else:
         logging.error(f"Failed to {action} the logger on device (IP: {device.ip}, Port: {device.port}, Unit ID: {device.unit_id}).")
 
+def execute_action_in_parallel(devices, action):
+    '''
+        Execute the start/stop action on multiple devices in parallel using ThreadPoolExecutor.
+    '''
+    with ThreadPoolExecutor() as executor:
+        futures = [executor.submit(control_logger, device, register_address, action) for device, register_address in devices]
+
+        for future in as_completed(futures):
+            try:
+                future.result()  # Wait for the task to complete and handle exceptions
+            except Exception as e:
+                logging.error(f"Error during parallel execution: {e}")
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Control the logger (start/stop).")
     parser.add_argument("action", choices=["start", "stop"], help="Action to perform on the logger (start or stop).")
@@ -59,7 +90,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     try:
-        device, register_address = load_device_from_csv("all_devices.csv", args.category, args.action)
-        control_logger(device, register_address, args.action)
+        devices = load_devices_from_csv("all_devices.csv", args.category, args.action)
+        logging.info(f"Executing '{args.action}' action on devices in category '{args.category}' in parallel...")
+        execute_action_in_parallel(devices, args.action)
     except ValueError as e:
         logging.error(f"Error: {e}")
