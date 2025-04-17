@@ -22,9 +22,15 @@ def load_devices_from_csv(csv_file, category, action):
 
             if row['category'] == category:
                 if category == "froniusDatamanager":
+                    # Special case: Start from unit_id = 2 for IP 10.101.1.168
+                    if row['ip'] == "10.101.1.168":
+                        start_unit_id = 2
+                    else:
+                        start_unit_id = 1
+
                     # Iterate over all unit IDs ONLY for froniusDatamanager
                     max_unit_id = int(row['unit_id'])
-                    for unit_id in range(1, max_unit_id + 1):
+                    for unit_id in range(start_unit_id, max_unit_id + 1):
                         device = ModbusDevice(ip=row['ip'], port=int(row['port']), unit_id=unit_id)
                         if action == "start":
                             register_address = int(row['register_start_addr'])
@@ -45,7 +51,6 @@ def load_devices_from_csv(csv_file, category, action):
     if not devices:
         raise ValueError(f"No devices found for category '{category}' in the CSV file.")
     return devices
-
 
 def control_logger(device, register_address, action, category):
     '''

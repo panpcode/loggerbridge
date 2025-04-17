@@ -24,9 +24,15 @@ def load_devices_by_category(csv_file, category):
 
             if row['category'] == category:
                 if category == "froniusDatamanager":
+                    # Special case: Start from unit_id = 2 for IP 10.101.1.168
+                    if row['ip'] == "10.101.1.168":
+                        start_unit_id = 2
+                    else:
+                        start_unit_id = 1
+
                     # Iterate over all unit IDs ONLY for froniusDatamanager
                     max_unit_id = int(row['unit_id'])  
-                    for unit_id in range(1, max_unit_id + 1): 
+                    for unit_id in range(start_unit_id, max_unit_id + 1): 
                         device = ModbusDevice(ip=row['ip'], port=int(row['port']), unit_id=unit_id)
                         register = Register(
                             address=int(row['register_status_addr']),
