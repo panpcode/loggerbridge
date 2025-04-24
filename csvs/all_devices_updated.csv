@@ -1,4 +1,4 @@
-category,ip,port,unit_id,register_status_addr,register_start_addr,register_stop_addr,register_name,scale,p-id
+category,ip,port,unit_id,register_status_addr,register_start_addr,register_stop_addr,register_name,scale,P-ID
 froniusGen24,10.103.11.51,502,1,40193,40241,40241,PV inverter state,1,CP-296
 froniusGen24,10.103.11.52,502,1,40193,40241,40241,PV inverter state,1,CP-296
 froniusGen24,10.103.11.53,502,1,40193,40241,40241,PV inverter state,1,CP-296
@@ -49,8 +49,8 @@ froniusGen24,10.108.20.54,502,1,40193,40241,40241,PV inverter state,1,S-259
 froniusGen24,10.108.20.55,502,1,40193,40241,40241,PV inverter state,1,S-259
 huawei,10.107.1.168,502,100,40543,40203,40202,PV inverter state,1,CN-448
 huawei,10.100.31.160,502,100,40543,40203,40202,PV inverter state,1,CP-328
-huawei,10.100.7.161,502,100,40543,40203,40202,PV inverter state,1,S-013
-huawei,10.100.7.160,502,100,40543,40203,40202,PV inverter state,1,S-014
+huawei,10.100.7.163,502,100,40543,40203,40202,PV inverter state,1,
+huawei,10.100.7.168,502,100,40543,40203,40202,PV inverter state,1,
 huawei,10.102.19.160,502,100,40543,40203,40202,PV inverter state,1,S-015
 huawei,10.102.9.161,502,100,40543,40203,40202,PV inverter state,1,S-017
 huawei,10.102.2.160,502,100,40543,40203,40202,PV inverter state,1,S-020
@@ -58,7 +58,7 @@ huawei,10.100.12.162,502,100,40543,40203,40202,PV inverter state,1,S-022
 huawei,10.100.12.163,502,100,40543,40203,40202,PV inverter state,1,S-023
 huawei,10.100.13.168,502,100,40543,40203,40202,PV inverter state,1,S-024
 huawei,10.102.20.160,502,100,40543,40203,40202,PV inverter state,1,S-025
-huawei,10.100.14.160,502,100,40543,40203,40202,PV inverter state,1,S-027
+huawei,10.100.14.168,502,100,40543,40203,40202,PV inverter state,1,
 huawei,10.100.15.168,502,100,40543,40203,40202,PV inverter state,1,S-028
 huawei,10.100.19.160,502,100,40543,40203,40202,PV inverter state,1,S-037
 huawei,10.100.18.168,502,100,40543,40203,40202,PV inverter state,1,S-038

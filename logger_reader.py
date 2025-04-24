@@ -23,6 +23,7 @@ def load_devices_by_category(csv_file, category):
                 continue
 
             if row['category'] == category:
+                p_id = row.get('p-id', 'N/A') 
                 if category == "froniusDatamanager":
                     # Special case: Start from unit_id = 2 for IP 10.101.1.168
                     if row['ip'] == "10.101.1.168":
@@ -37,33 +38,31 @@ def load_devices_by_category(csv_file, category):
                         register = Register(
                             address=int(row['register_status_addr']),
                             name=f"{row['register_name']} (Unit ID: {unit_id})",
-                            scale=int(row['scale']),
-                            unit=row['unit']
+                            scale=int(row['scale'])
                         )
-                        devices.append((device, [register]))
+                        devices.append((device, [register], p_id))
                 else:
                     device = ModbusDevice(ip=row['ip'], port=int(row['port']), unit_id=int(row['unit_id']))
                     register = Register(
                         address=int(row['register_status_addr']),
                         name=row['register_name'],
-                        scale=int(row['scale']),
-                        unit=row['unit']
+                        scale=int(row['scale'])
                     )
-                    devices.append((device, [register]))
+                    devices.append((device, [register], p_id))
     if not devices:
         raise ValueError(f"No devices found for category '{category}' in the CSV file.")
     return devices
 
-def read_device(device, registers, category):
+def read_device(device, registers, category, p_id):
     '''
         Read all registers for a single device.
     '''
     try:
-        print(f"Reading device at IP: {device.ip}, Port: {device.port}, Unit ID: {device.unit_id}, State register: {registers[0].address}")
-        reader = ModbusReader(device=device, registers=registers, category=category)
+        print(f"Reading device at IP: {device.ip}, Port: {device.port}, Unit ID: {device.unit_id}, State register: {registers[0].address}, P-ID: {p_id}")
+        reader = ModbusReader(device=device, registers=registers, category=category, p_id=p_id)  # Pass p-id to ModbusReader
         reader.read_all_registers()
     except Exception as e:
-        print(f"Error reading device at IP: {device.ip}, Port: {device.port}, Unit ID: {device.unit_id}: {e}")
+        print(f"Error reading device at IP: {device.ip}, Port: {device.port}, Unit ID: {device.unit_id}, P-ID: {p_id}: {e}")
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
@@ -75,12 +74,11 @@ if __name__ == "__main__":
         devices = load_devices_by_category("all_devices.csv", category)
 
         print(f"Reading state of devices in category '{category}' in parallel...")
-        # default_workers = min(32, os.cpu_count() + 4)
         with ThreadPoolExecutor() as executor:
-            # parallel reading 
-            futures = [executor.submit(read_device, device, registers, category) for device, registers in devices]
+            # Parallel reading
+            futures = [executor.submit(read_device, device, registers, category, p_id) for device, registers, p_id in devices]
 
-            # w8 for all tasks to complete
+            # Wait for all tasks to complete
             for future in as_completed(futures):
                 try:
                     future.result() 

@@ -21,6 +21,7 @@ def load_devices_from_csv(csv_file, category, action):
                 continue
 
             if row['category'] == category:
+                p_id = row.get('p-id', 'N/A')
                 if category == "froniusDatamanager":
                     # Special case: Start from unit_id = 2 for IP 10.101.1.168
                     if row['ip'] == "10.101.1.168":
@@ -38,7 +39,7 @@ def load_devices_from_csv(csv_file, category, action):
                             register_address = int(row['register_stop_addr'])
                         else:
                             raise ValueError("Invalid action. Use 'start' or 'stop'.")
-                        devices.append((device, register_address))
+                        devices.append((device, register_address, p_id))
                 else:
                     device = ModbusDevice(ip=row['ip'], port=int(row['port']), unit_id=int(row['unit_id']))
                     if action == "start":
@@ -47,12 +48,12 @@ def load_devices_from_csv(csv_file, category, action):
                         register_address = int(row['register_stop_addr'])
                     else:
                         raise ValueError("Invalid action. Use 'start' or 'stop'.")
-                    devices.append((device, register_address))
+                    devices.append((device, register_address, p_id))
     if not devices:
         raise ValueError(f"No devices found for category '{category}' in the CSV file.")
     return devices
 
-def control_logger(device, register_address, action, category):
+def control_logger(device, register_address, action, category, p_id):
     '''
         Control the logger by writing to the appropriate register address.
     '''
@@ -69,7 +70,7 @@ def control_logger(device, register_address, action, category):
             value = 0  
             action_text = "Stopping"
         else:
-            logging.error("Invalid action. Use 'start' or 'stop'.")
+            logging.error(f"❌ Failed - {p_id} state with IP {device.ip} : Invalid action. Use 'start' or 'stop'.")
             return
     else:
         # Default logic for other categories
@@ -80,16 +81,14 @@ def control_logger(device, register_address, action, category):
             value = STOP_VALUE
             action_text = "Stopping"
         else:
-            logging.error("Invalid action. Use 'start' or 'stop'.")
+            logging.error(f"❌ Failed - {p_id} state with IP {device.ip} : Invalid action. Use 'start' or 'stop'.")
             return
 
-    # logging.info(f"{action_text} the logger on device (IP: {device.ip}, Port: {device.port}, Unit ID: {device.unit_id})...")
     result = device.write_register(register_address, value)
     if result:
-        logging.info(f"Signal to {action} the logger sent successfully to device (IP: {device.ip}, Port: {device.port}, Unit ID: {device.unit_id}).")
+        logging.info(f"✅ SUCCESS - {p_id} state with IP {device.ip} : Signal to {action} sent successfully.")
     else:
-        logging.error(f"Failed to {action} the logger on device (IP: {device.ip}, Port: {device.port}, Unit ID: {device.unit_id}).")
-
+        logging.error(f"❌ Failed - {p_id} state with IP {device.ip} : Failed to send signal to {action}.")
 
 def execute_action_in_parallel(devices, action, category):
     '''
@@ -99,7 +98,7 @@ def execute_action_in_parallel(devices, action, category):
     task_timeout = 30  # timeout for each task (secs)
 
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
-        futures = [executor.submit(control_logger, device, register_address, action, category) for device, register_address in devices]
+        futures = [executor.submit(control_logger, device, register_address, action, category, p_id) for device, register_address, p_id in devices]
 
         for future in as_completed(futures):
             try:

@@ -1,4 +1,4 @@
-category,ip,port,unit_id,register_status_addr,register_start_addr,register_stop_addr,register_name,scale,unit
+category,ip,port,unit_id,register_status_addr,register_start_addr,register_stop_addr,register_name,scale,unit,inverter quantity
 froniusDatamanager,10.100.17.168,502,16,40193,40241,40241,PV inverter state,1,
 froniusDatamanager,10.100.2.161,502,16,40193,40241,40241,PV inverter state,1,
 froniusDatamanager,10.100.5.162,502,32,40193,40241,40241,PV inverter state,1,
