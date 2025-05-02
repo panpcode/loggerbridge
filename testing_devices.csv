@@ -1,5 +1,5 @@
 category,ip,port,unit_id,register_address,register_name,scale,unit
 huawei,10.100.7.163,502,100,40202,Plant Status,1,
 sungrow,10.100.2.163,502,247,8001,Plant Status,1,
-froniusGen24,10.108.1.51,502,1,40193,PV inverter state,1,
+pilot,10.108.1.51,502,1,40193,PV inverter state,1,
 froniusDatamanager,10.100.2.161,502,1,40193,Plant Status,1, 

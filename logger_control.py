@@ -111,7 +111,7 @@ def execute_action_in_parallel(devices, action, category):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Control the logger (start/stop).")
     parser.add_argument("action", choices=["start", "stop"], help="Action to perform on the logger (start or stop).")
-    parser.add_argument("category", help="Device category (e.g., huawei, sungrow, froniusGen24, froniusDatamanager).")
+    parser.add_argument("category", help="Device category (e.g., huawei, sungrow, pilot, froniusDatamanager).")
     args = parser.parse_args()
 
     try:

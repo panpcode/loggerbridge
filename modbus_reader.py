@@ -32,7 +32,7 @@ class ModbusReader:
                             logging.info(f"✅ SUCCESS - {self.p_id} state with IP {self.device.ip} : STOPPED")
                         else:
                             logging.info(f"✅ SUCCESS - {self.p_id} state with IP {self.device.ip} : {raw_value} {reg.unit}")
-                    elif self.category in ["froniusGen24"]:
+                    elif self.category in ["pilot"]:
                         if raw_value == [7]:
                             logging.info(f"✅ SUCCESS - {self.p_id} state with IP {self.device.ip} : RUNNING")
                         elif raw_value == [1]:
