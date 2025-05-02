@@ -9,7 +9,7 @@ services:
       - "5001:5000"
     volumes:
       - ../:/app  
-      - ../all_devices.csv:/app/all_devices.csv
+      - ../all_devices_classb.csv:/app/all_devices_classb.csv
     environment:
       - FLASK_APP=app.py
       - FLASK_RUN_HOST=0.0.0.0

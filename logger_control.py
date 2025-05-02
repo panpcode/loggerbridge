@@ -115,7 +115,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     try:
-        devices = load_devices_from_csv("all_devices.csv", args.category, args.action)
+        devices = load_devices_from_csv("all_devices_classb.csv", args.category, args.action)
         logging.info(f"Executing '{args.action}' action on devices in category '{args.category}' in parallel...")
         execute_action_in_parallel(devices, args.action, args.category)
     except ValueError as e:
