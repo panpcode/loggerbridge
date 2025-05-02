@@ -5,13 +5,14 @@ services:
     build:
       context: ../
       dockerfile: package/Dockerfile
-    image: package-loggerbridge:a-class
+    image: package-loggerbridge-a:latest
     container_name: loggerbridge-a-class
     ports:
       - "5002:5000"
     volumes:
       - ../:/app
-      - ../all_devices_classa.csv:/app/all_devices.csv 
+      - ../templates/index-class-a.html:/app/templates/index.html 
+      - ../all_devices_classa.csv:/app/all_devices.csv
     environment:
       - FLASK_APP=app.py
       - FLASK_RUN_HOST=0.0.0.0
@@ -26,13 +27,14 @@ services:
     build:
       context: ../
       dockerfile: package/Dockerfile
-    image: package-loggerbridge:b-class
+    image: package-loggerbridge-b:latest
     container_name: loggerbridge-b-class
     ports:
-      - "5001:5000"  
+      - "5001:5000"
     volumes:
       - ../:/app
-      - ../all_devices_classb.csv:/app/all_devices.csv 
+      - ../templates/index-class-b.html:/app/templates/index.html 
+      - ../all_devices_classb.csv:/app/all_devices.csv
     environment:
       - FLASK_APP=app.py
       - FLASK_RUN_HOST=0.0.0.0
