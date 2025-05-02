@@ -5,6 +5,8 @@ services:
     build:
       context: ../   
       dockerfile: package/Dockerfile
+    image: package-loggerbridge:b-class
+    container_name: loggerbridge-b-class
     ports:
       - "5001:5000"
     volumes:
