@@ -1,6 +1,6 @@
 import pandas as pd
 
-all_devices_file = "all_devices.csv"  
+all_devices_file = "all_devices_classa.csv"  
 ip_pid_file = "ip_pid.csv"           
 output_file = "all_devices_with_pid.csv"  
 all_devices_df = pd.read_csv(all_devices_file)

@@ -71,7 +71,7 @@ if __name__ == "__main__":
 
     category = sys.argv[1]  
     try:
-        devices = load_devices_by_category("all_devices.csv", category)
+        devices = load_devices_by_category("all_devices_classa.csv", category)
 
         print(f"Reading state of devices in category '{category}' in parallel...")
         with ThreadPoolExecutor() as executor:
