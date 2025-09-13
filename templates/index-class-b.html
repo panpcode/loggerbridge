@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Logger Bridge</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.5;
+        }
+        .section {
+            margin-top: 30px; 
+        }
+    </style>
+</head>
+<body>
+    <h1>Logger Bridge - B Curtailment Group</h1>
+    <p>
+        Welcome to the Logger Bridge interface. This tool allows you to monitor and control loggers for various devices, 
+        including Huawei, Sungrow, Pilot, and Fronius Datamanager. Use the options below to read the state of loggers 
+        or start/stop them as needed.
+    </p>
+
+    <!-- Logger Reader Form -->
+    <div class="section">
+        <h2>Read the state of Loggers</h2>
+        <form action="/run" method="post">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="script" value="logger">
+            
+            <label for="reader_category">Select Category:</label>
+            <select name="category" id="reader_category" required>
+                <option value="huawei">Huawei</option>
+                <option value="sungrow">Sungrow</option>
+                <option value="pilot">Pilot</option>
+                <option value="froniusDatamanager">Fronius Datamanager</option>
+            </select>
+            
+            <br><br>
+            <button type="submit">Run Logger Reader</button>
+        </form>
+    </div>
+
+    <!-- Logger Control Form -->
+    <div class="section">
+        <h2>Start or Stop Loggers</h2>
+        <form action="/run" method="post">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="script" value="control">
+            
+            <label for="control_category">Select Category:</label>
+            <select name="category" id="control_category" required>
+                <option value="huawei">Huawei</option>
+                <option value="sungrow">Sungrow</option>
+                <option value="pilot">Pilot</option>
+                <option value="froniusDatamanager">Fronius Datamanager</option>
+            </select>
+            
+            <br><br>
+            <button type="submit" name="action" value="start">Start Logger(s)</button>
+            <button type="submit" name="action" value="stop">Stop Logger(s)</button>
+        </form>
+    </div>
+</body>
+</html>

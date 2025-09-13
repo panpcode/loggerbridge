@@ -1,15 +1,40 @@
 version: '3.8'
 
 services:
-  loggerbridge:
+  loggerbridge-a:
     build:
-      context: ../   
+      context: ../
       dockerfile: package/Dockerfile
+    image: package-loggerbridge-a:latest
+    container_name: loggerbridge-a-class
+    ports:
+      - "5002:5000"
+    volumes:
+      - ../:/app
+      - ../templates/index-class-a.html:/app/templates/index.html 
+      - ../all_devices_classa.csv:/app/all_devices.csv
+    environment:
+      - FLASK_APP=app.py
+      - FLASK_RUN_HOST=0.0.0.0
+    restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "5"
+
+  loggerbridge-b:
+    build:
+      context: ../
+      dockerfile: package/Dockerfile
+    image: package-loggerbridge-b:latest
+    container_name: loggerbridge-b-class
     ports:
       - "5001:5000"
     volumes:
-      - ../:/app  
-      - ../all_devices.csv:/app/all_devices.csv
+      - ../:/app
+      - ../templates/index-class-b.html:/app/templates/index.html 
+      - ../all_devices_classb.csv:/app/all_devices.csv
     environment:
       - FLASK_APP=app.py
       - FLASK_RUN_HOST=0.0.0.0
